@@ -1,5 +1,5 @@
-import { Link } from '@tanstack/react-router'
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { Link, useNavigate} from '@tanstack/react-router'
+import {useSuspenseQuery} from '@tanstack/react-query'
 import {
     Table,
     TableBody,
@@ -18,11 +18,10 @@ import AddIcon from '@mui/icons-material/Add'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import EditIcon from '@mui/icons-material/Edit'
 
-import { desksModule } from '../module'
-import { useAuthStore } from '../../auth/store/authStore'
-import { useTranslation } from 'react-i18next'
-import { usePermissions } from '../../../shared/hooks/usePermissions'
-import { useNavigate } from '@tanstack/react-router'
+import {desksModule} from '../module'
+import {useAuthStore} from '../../auth/store/authStore'
+import {useTranslation} from 'react-i18next'
+import {usePermissions} from '../../../shared/hooks/usePermissions'
 import type { ChangeEvent } from "react"
 
 export function DesksListView() {
@@ -100,19 +99,21 @@ export function DesksListView() {
                                             {t('common.view')}
                                         </Button>
                                     </Link>
-                                    <Link
-                                        to={desksModule.routes.edit.to} // Assuming an 'edit' route exists or using a placeholder
-                                        params={{ id: desk.id }}
-                                        style={{ textDecoration: 'none' }}
-                                    >
-                                        <Button
-                                            variant="outlined"
-                                            startIcon={<EditIcon />}
-                                            size="small"
+                                    {usePermissions(desk.actions).canEdit && (
+                                        <Link
+                                            to={desksModule.routes.edit.to} // Assuming an 'edit' route exists or using a placeholder
+                                            params={{ id: desk.id }}
+                                            style={{ textDecoration: 'none' }}
                                         >
-                                            {t('common.edit')}
-                                        </Button>
-                                    </Link>
+                                            <Button
+                                                variant="outlined"
+                                                startIcon={<EditIcon />}
+                                                size="small"
+                                            >
+                                                {t('common.edit')}
+                                            </Button>
+                                        </Link>
+                                    )}
                                 </TableCell>
                             </TableRow>
                         ))}
