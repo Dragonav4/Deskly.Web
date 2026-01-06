@@ -13,7 +13,7 @@ export const protectedRoute = createRoute({
             throw redirect({
                 to: '/auth/login',
                 search: {
-                    redirect: location.href,
+                    redirect: location.href, //returns you back after auth
                 },
             })
         }

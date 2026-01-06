@@ -8,7 +8,7 @@ export const publicRoute = createRoute({
     component: PublicLayout,
 })
 
-function PublicLayout() {
+function PublicLayout() { //*Outlet place where router ‘inserts’ the content of the current page (e.g., a list of tables or an editing form).
     return (
         <>
             <Outlet />

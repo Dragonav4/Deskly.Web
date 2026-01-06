@@ -37,7 +37,7 @@ export function ReservationForm({
     error,
     onSubmit,
     onCancel
-}: ReservationFormProps) {
+}: Readonly<ReservationFormProps>) {
     const { t } = useTranslation()
 
     const {

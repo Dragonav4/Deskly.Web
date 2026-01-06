@@ -1,4 +1,5 @@
-import { Link, useNavigate} from '@tanstack/react-router'
+import { Link, useNavigate} from '@tanstack/react-router' //Link == <a href="https//...> but without updating the page, router just replaces a component
+// TanStack RouterIt synchronises the URL in the browser with what is displayed on the screen
 import {useSuspenseQuery} from '@tanstack/react-query'
 import {
     Table,
@@ -26,23 +27,25 @@ import type { ChangeEvent } from "react"
 
 export function DesksListView() {
     const { t } = useTranslation()
-    const navigate = useNavigate()
-    const { page, size } = desksModule.routes.list.useSearch()
-    const { data } = useSuspenseQuery(desksModule.queries.getAll({ page, size }))
+    const navigate = useNavigate() //* programmatic way to change the page
+    const { page, size } = desksModule.routes.list.useSearch()//* useSearch check url and returns page and size params
+    const { data } = useSuspenseQuery(desksModule.queries.getAll({ page, size })) //* smart state manager for data fetching(api calls) with data caching 
 
     const isAuth = useAuthStore(s => !!s.user)
 
     const { items, actions, totalCount } = data
     const { canCreate } = usePermissions(actions)
 
-    const handleChangePage = (_: any, newPage: number) => {
-        navigate({ to: ".", search: (prev: any) => ({ ...prev, page: newPage }) })
+    const handleChangePage = (_: any, newPage: number) => { //* change page
+        navigate({ 
+            to: ".", //stay on this page
+            search: (prev: any) => ({ ...prev, page: newPage }) }) //* prev - current params in url => old params + new one
     }
 
-    const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
+    const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => { //*change rows per page
         navigate({
             to: '.',
-            search: (prev: any) => ({ ...prev, size: parseInt(event.target.value, 10), page: 0 })
+            search: (prev: any) => ({ ...prev, size: parseInt(event.target.value, 10), page: 0 }) //* radix = number system aka(10th, 010101, etc) page:0 -> starts from 0 page
         })
     }
 

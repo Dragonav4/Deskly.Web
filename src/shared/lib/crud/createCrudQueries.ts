@@ -15,9 +15,9 @@ export function createCrudQueries<T, CreateDto, UpdateDto>(
 ) {
     return {
         getAll: (params?: { page: number; size: number }) =>
-            queryOptions({
-                queryKey: params ? [name, 'list', params] : [name, 'list'],
-                queryFn: () => api.getAll(params!),
+            queryOptions({ //* just typesafe wrapping(blueprint) for useSuspenceQuery(), 
+                queryKey: params ? [name, 'list', params] : [name, 'list'], //*key for invalidation purposes,
+                queryFn: () => api.getAll(params),
             }),
 
         getById: (id: string) =>
@@ -33,9 +33,9 @@ export function createCrudQueries<T, CreateDto, UpdateDto>(
         },
 
         update: {
-            mutationFn: ({ id, data }: { id: string; data: UpdateDto }) =>
+            mutationFn: ({ id, data }: { id: string; data: UpdateDto }) => //*Mutation func responsible for real api requests 
                 api.update(id, data),
-            onSuccess: (_data: T, variables: { id: string; data: UpdateDto }, _context: unknown) => {
+            onSuccess: (_data: T, variables: { id: string; data: UpdateDto }, _context: unknown) => { //*if api request -> successful -> onSuccess
                 queryClient.invalidateQueries({ queryKey: [name, 'list'] })
                 queryClient.invalidateQueries({ queryKey: [name, variables.id] })
             },
@@ -43,7 +43,7 @@ export function createCrudQueries<T, CreateDto, UpdateDto>(
 
         delete: {
             mutationFn: (id: string) => api.delete(id),
-            onSuccess: (_data: void, _variables: string, _context: unknown) => {
+            onSuccess: (_data: void, _variables: string, _context: unknown) => { //* _ -> "I know this argument is there, but I'm not going to use it in the body of the function"
                 queryClient.invalidateQueries({ queryKey: [name, 'list'] })
             },
         },

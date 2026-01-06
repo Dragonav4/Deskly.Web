@@ -1,15 +1,15 @@
-import { useNavigate } from '@tanstack/react-router'
-import { useMutation } from '@tanstack/react-query'
-import { desksModule } from '../module'
-import { useTranslation } from 'react-i18next'
-import { DeskForm } from './forms/DeskForm'
+import {useNavigate} from '@tanstack/react-router'
+import {useMutation} from '@tanstack/react-query'
+import {desksModule} from '../module'
+import {useTranslation} from 'react-i18next'
+import {DeskForm} from './forms/DeskForm'
 
 export default function DeskCreateView() {
     const navigate = useNavigate()
-    const { t } = useTranslation()
-    const { queries } = desksModule
+    const {t} = useTranslation()
+    const {queries} = desksModule
 
-    const { mutate, isPending, error: mutationError } = useMutation({
+    const {mutate, isPending, error: mutationError} = useMutation({
         ...queries.create,
         onSuccess: async (result, variables, context) => {
             if (queries.create.onSuccess) {
@@ -18,7 +18,7 @@ export default function DeskCreateView() {
 
             navigate({
                 to: desksModule.routes.view.fullPath as any,
-                params: { id: result.id } as any
+                params: {id: result.id} as any
             })
         }
     })
@@ -30,7 +30,7 @@ export default function DeskCreateView() {
             isPending={isPending}
             error={mutationError instanceof Error ? mutationError : null}
             onSubmit={(data) => mutate(data)}
-            onCancel={() => navigate({ to: desksModule.routes.list.to })}
+            onCancel={() => navigate({to: desksModule.routes.list.to})}
         />
     )
 }
