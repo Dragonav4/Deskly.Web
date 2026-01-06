@@ -25,7 +25,6 @@ export const desksApi = {
     },
 
     async update(id: string, payload: DeskUpdateDto) {
-        console.log("update request send with:", id)
         return http.put(`/desks/${id}`, payload).then(r => r.data as DeskUpdateDto)
     },
 

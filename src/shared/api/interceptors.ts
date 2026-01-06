@@ -2,19 +2,10 @@
 import { http, API_URL } from './http'
 import { auth } from '../../features/auth/store/authStore'
 
-http.interceptors.request.use(config => {
-    const token = auth.getAccessToken()
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-})
-
-
 http.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response && error.response.status === 401) {
+        if (error.response?.status === 401) {
             auth.signOut();
 
             const isListPage = ['/', '/desks', '/reservations', '/reservations/'].includes(window.location.pathname);
