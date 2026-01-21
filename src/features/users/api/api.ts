@@ -1,34 +1,29 @@
-import { http } from '../../../shared/api'
-import type {
-    User,
-    UserCreateDto,
-    UserUpdateDto,
-    UserListResponse,
-} from '../types/types'
+import { getApiUsers, getApiUsersById, postApiUsers, putApiUsersById, deleteApiUsersById } from '../../../shared/api/generated'
+import type { UserView, UserCreateView } from '../../../shared/api/generated'
 
 export const usersApi = {
-    async getAll(params: { page?: number; size?: number } = {}): Promise<UserListResponse> {
+    async getAll(params: { page?: number; size?: number } = {}) {
         const { page = 0, size = 10 } = params
         const skip = page * size
         const take = size
-        const r = await http.get('/users', { params: { skip, take } })
+        const r = await getApiUsers({ query: { skip, take } })
         return r.data
     },
 
-    async get(id: string): Promise<User> {
-        return http.get(`/users/${id}`).then(r => r.data)
+    async get(id: string) {
+        return getApiUsersById({ path: { id } }).then(r => r.data)
     },
 
-    async create(payload: UserCreateDto) {
-        const r = await http.post('/users', payload)
-        return r.data as UserUpdateDto
+    async create(payload: UserCreateView) {
+        const r = await postApiUsers({ body: payload })
+        return r.data
     },
 
-    async update(id: string, payload: UserUpdateDto) {
-        return http.put(`/users/${id}`, payload).then(r => r.data as UserUpdateDto)
+    async update(id: string, payload: UserView) {
+        return putApiUsersById({ path: { id }, body: payload }).then(r => r.data)
     },
 
     async delete(id: string) {
-        return http.delete(`/users/${id}`).then(r => r.data)
+        return deleteApiUsersById({ path: { id } }).then(r => r.data)
     },
 }

@@ -1,35 +1,29 @@
-import { http } from '../../../shared/api'
-import type {
-    ReservationListResponse,
-    Reservation,
-    ReservationCreateDto,
-    ReservationUpdateDto,
-} from '../types/types'
+import { getApiReservations, getApiReservationsById, postApiReservations, putApiReservationsById, deleteApiReservationsById } from '../../../shared/api/generated'
+import type { ReservationView, ReservationCreateView } from '../../../shared/api/generated'
+
 export const reservationsApi = {
-    async getAll(params: { page?: number; size?: number } = {}): Promise<ReservationListResponse> {
+    async getAll(params: { page?: number; size?: number } = {}) {
         const { page = 0, size = 10 } = params
         const skip = page * size
         const take = size
-        const r = await http.get('/reservations', { params: { skip, take } })
+        const r = await getApiReservations({ query: { skip, take } })
         return r.data
     },
-    
 
-    async get(id: string): Promise<Reservation> {
-        return http.get(`/reservations/${id}`).then(r => r.data)
+    async get(id: string) {
+        return getApiReservationsById({ path: { id } }).then(r => r.data)
     },
 
-    async create(payload: ReservationCreateDto) {
-        const r = await http.post('/reservations', payload)
-        return r.data as Reservation
+    async create(payload: ReservationCreateView) {
+        const r = await postApiReservations({ body: payload })
+        return r.data
     },
 
-    async update(id: string, payload: ReservationUpdateDto) {
-        console.log("update request send with:", id)
-        return http.put(`/reservations/${id}`, payload).then(r => r.data as Reservation)
+    async update(id: string, payload: ReservationView) {
+        return putApiReservationsById({ path: { id }, body: payload }).then(r => r.data)
     },
 
     async delete(id: string) {
-        return http.delete(`/reservations/${id}`).then(r => r.data)
+        return deleteApiReservationsById({ path: { id } }).then(r => r.data)
     },
 }

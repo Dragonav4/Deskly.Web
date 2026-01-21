@@ -13,7 +13,7 @@ import { authModule } from "../features/auth";
 // Modules
 import { modules } from "../features";
 
-const publicModuleRoutes = modules.map(m =>
+const publicModuleRoutes = modules.map(m => 
     m.routesTree.public.addChildren([m.routes.list, m.routes.view])
 )
 

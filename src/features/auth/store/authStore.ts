@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import { http } from '../../../shared/api'
+import { getApiAuthMe } from '../../../shared/api/generated'
 
 export type User = { id: string; email: string; name?: string; picture?: string | null; role?: string }
 
@@ -13,7 +13,7 @@ type AuthStore = {
 }
 
 export const useAuthStore = create<AuthStore>()(
-    persist( //*wrapper which will save vault into localStorage 
+    persist(
         (set) => ({
             user: null,
 
@@ -28,14 +28,14 @@ export const useAuthStore = create<AuthStore>()(
         {
             name: 'auth_state_v1',
             storage: createJSONStorage(() => localStorage),
-            partialize: (s) => ({ user: s.user }), //*what exactly saved into localStorage
+            partialize: (s) => ({ user: s.user }),
             version: 1,
         },
     ),
 )
 
 export const auth = {
-    getUser: () => useAuthStore.getState().user, //getState() - snapshot of the store
+    getUser: () => useAuthStore.getState().user,
     isAuthenticated: () => Boolean(useAuthStore.getState().user),
 
     signIn: (user: User) => useAuthStore.getState().signIn(user),
@@ -43,10 +43,11 @@ export const auth = {
 
     fetchCurrentUser: async () => {
         try {
-            const response = await http.get<User>('/Auth/me');
+            const response = await getApiAuthMe();
+            const userData = response.data as User;
 
-            auth.signIn(response.data);
-            return response.data;
+            auth.signIn(userData);
+            return userData;
         } catch (error) {
             auth.signOut();
             return null;

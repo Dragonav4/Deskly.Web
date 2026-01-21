@@ -23,8 +23,7 @@ export function createCrudModule<T, CreateDto, UpdateDto>({
     views,
 }: CreateCrudModuleParams<T, CreateDto, UpdateDto>) {
     const queries = createCrudQueries<T, CreateDto, UpdateDto>(name, api)
-
-    /* ---------- PUBLIC ---------- */
+    
 
     const publicBase = createRoute({
         getParentRoute: () => publicRoute,
@@ -38,8 +37,8 @@ export function createCrudModule<T, CreateDto, UpdateDto>({
             page: Number(search.page ?? 0),
             size: Number(search.size ?? 10),
         }),
-        loader: ({ context, search }: any) =>
-            context.queryClient.ensureQueryData(queries.getAll(search)),
+        loader: ({ context, search }: any) => 
+            context.queryClient.ensureQueryData(queries.getAll(search)), //if in cache -> show, if not .getall
         component: () => <views.List />,
     })
 
@@ -53,7 +52,6 @@ export function createCrudModule<T, CreateDto, UpdateDto>({
         component: () => <views.View />,
     })
 
-    /* ---------- PROTECTED ---------- */
 
     const protectedBase = createRoute({
         getParentRoute: () => protectedRoute,
@@ -78,7 +76,7 @@ export function createCrudModule<T, CreateDto, UpdateDto>({
     }
 
     return {
-        id: name,
+        id: name, //reservation.routes.create // change in one place 
         routes: {
             list: listRoute,
             view: viewRoute,
