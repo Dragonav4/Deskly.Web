@@ -1,8 +1,7 @@
 import * as React from 'react'
-import { createRoute } from '@tanstack/react-router'
-import { publicRoute } from '../../../routes/public'
-import { protectedRoute } from '../../../routes/protected'
+import { createRoute, type AnyRoute } from '@tanstack/react-router'
 import { createCrudQueries, type CrudApi } from './createCrudQueries'
+import type { QueryClient } from '@tanstack/react-query'
 
 type CrudViews = {
     List: React.ComponentType
@@ -15,19 +14,24 @@ type CreateCrudModuleParams<T, CreateDto, UpdateDto> = {
     name: string
     api: CrudApi<T, CreateDto, UpdateDto>
     views: CrudViews
+    queryClient: QueryClient
+    parentRoutes: {
+        public: AnyRoute
+        protected: AnyRoute
+    }
 }
 
 export function createCrudModule<T, CreateDto, UpdateDto>({
     name,
     api,
     views,
+    queryClient,
+    parentRoutes,
 }: CreateCrudModuleParams<T, CreateDto, UpdateDto>) {
-    const queries = createCrudQueries<T, CreateDto, UpdateDto>(name, api)
-
-    /* ---------- PUBLIC ---------- */
+    const queries = createCrudQueries<T, CreateDto, UpdateDto>(name, api, queryClient)
 
     const publicBase = createRoute({
-        getParentRoute: () => publicRoute,
+        getParentRoute: () => parentRoutes.public,
         path: name,
     })
 
@@ -46,17 +50,15 @@ export function createCrudModule<T, CreateDto, UpdateDto>({
     const viewRoute = createRoute({
         getParentRoute: () => publicBase,
         path: '$id',
-        loader: ({ context, params }) =>
+        loader: ({ context, params }: any) =>
             context.queryClient.ensureQueryData(
                 queries.getById(params.id),
             ),
         component: () => <views.View />,
     })
 
-    /* ---------- PROTECTED ---------- */
-
     const protectedBase = createRoute({
-        getParentRoute: () => protectedRoute,
+        getParentRoute: () => parentRoutes.protected,
         path: name,
     })
 
@@ -72,11 +74,6 @@ export function createCrudModule<T, CreateDto, UpdateDto>({
         component: () => <views.Edit />,
     })
 
-    const routesTree = {
-        public: publicBase,
-        protected: protectedBase,
-    }
-
     return {
         id: name,
         routes: {
@@ -85,7 +82,10 @@ export function createCrudModule<T, CreateDto, UpdateDto>({
             create: createRoute_,
             edit: editRoute,
         },
-        routesTree,
+        routesTree: {
+            public: publicBase,
+            protected: protectedBase,
+        },
         queries,
     }
 }
