@@ -39,7 +39,6 @@ jobs:
 
       - name: Build and Push Container
         run: |
-          cd hoteling-web
           docker build --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} -t "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }}" .
           docker push "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }}"
 
